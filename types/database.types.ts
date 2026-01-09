@@ -1,0 +1,111 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      players: {
+        Row: {
+          id: string
+          room_code: string
+          nickname: string
+          score: number
+          gold: number
+          avatar: string | null
+          is_online: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          room_code: string
+          nickname: string
+          score?: number
+          gold?: number
+          avatar?: string | null
+          is_online?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          room_code?: string
+          nickname?: string
+          score?: number
+          gold?: number
+          avatar?: string | null
+          is_online?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      rooms: {
+        Row: {
+          room_code: string
+          status: 'waiting' | 'playing' | 'finished'
+          current_q_index: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          room_code: string
+          status?: 'waiting' | 'playing' | 'finished'
+          current_q_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          room_code?: string
+          status?: 'waiting' | 'playing' | 'finished'
+          current_q_index?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      questions: {
+        Row: {
+          id: string
+          set_id: string
+          type: 'CHOICE' | 'SHORT' | 'OX' | 'BLANK'
+          question_text: string
+          options: Json
+          answer: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          set_id: string
+          type: 'CHOICE' | 'SHORT' | 'OX' | 'BLANK'
+          question_text: string
+          options: Json
+          answer: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          set_id?: string
+          type?: 'CHOICE' | 'SHORT' | 'OX' | 'BLANK'
+          question_text?: string
+          options?: Json
+          answer?: string
+          created_at?: string
+        }
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+  }
+}
+

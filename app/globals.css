@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-white text-gray-900;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* 메이플스토리 스타일 효과 */
+  .neon-glow {
+    text-shadow: 
+      0 0 10px currentColor,
+      0 0 20px currentColor,
+      0 0 30px currentColor,
+      0 0 40px currentColor;
+  }
+  
+  .glow-box {
+    box-shadow: 
+      0 0 15px rgba(255, 192, 203, 0.6),
+      0 0 30px rgba(255, 182, 193, 0.4),
+      0 0 45px rgba(255, 105, 180, 0.3),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  
+  .maple-glow {
+    box-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.5),
+      0 0 40px rgba(255, 192, 203, 0.4),
+      0 0 60px rgba(255, 105, 180, 0.3);
+  }
+  
+  .sparkle {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .sparkle::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.5) 50%,
+      transparent 70%
+    );
+    animation: sparkle-rotate 3s linear infinite;
+  }
+  
+  @keyframes sparkle-rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 
+        0 0 15px rgba(255, 192, 203, 0.6),
+        0 0 30px rgba(255, 182, 193, 0.4);
+    }
+    50% {
+      box-shadow: 
+        0 0 25px rgba(255, 192, 203, 0.9),
+        0 0 50px rgba(255, 182, 193, 0.7),
+        0 0 75px rgba(255, 105, 180, 0.5);
+    }
+  }
+  
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+      transform: translateY(-15px) rotate(2deg);
+    }
+    50% {
+      transform: translateY(-25px) rotate(0deg);
+    }
+    75% {
+      transform: translateY(-15px) rotate(-2deg);
+    }
+  }
+  
+  .bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+  
+  @keyframes bounce-gentle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.6),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  .maple-button {
+    background: linear-gradient(135deg, #ffd700 0%, #ffb6c1 50%, #ff69b4 100%);
+    border: 3px solid #fff;
+    box-shadow: 
+      0 4px 15px rgba(255, 215, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .maple-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 20px rgba(255, 215, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  
+  .maple-button:active {
+    transform: translateY(0);
+  }
+  
+  .maple-card {
+    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(255, 228, 225, 0.9) 100%);
+    border: 3px solid #fff;
+    box-shadow: 
+      0 8px 25px rgba(255, 182, 193, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+  }
+  
+  .maple-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 
+      0 12px 35px rgba(255, 182, 193, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+  
+  .star-pattern {
+    background-image: 
+      radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(2px 2px at 60px 70px, rgba(255, 215, 0, 0.6), transparent),
+      radial-gradient(1px 1px at 50px 50px, rgba(255, 192, 203, 0.7), transparent),
+      radial-gradient(1px 1px at 80px 10px, rgba(255, 182, 193, 0.5), transparent),
+      radial-gradient(2px 2px at 90px 40px, rgba(255, 105, 180, 0.6), transparent);
+    background-size: 100px 100px;
+    background-position: 0 0, 40px 60px, 130px 270px, 70px 100px, 20px 200px;
+  }
+  
+  .rainbow-text {
+    background: linear-gradient(
+      90deg,
+      #ff0000 0%,
+      #ff7f00 14%,
+      #ffff00 28%,
+      #00ff00 42%,
+      #0000ff 56%,
+      #4b0082 70%,
+      #9400d3 84%,
+      #ff0000 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 3s linear infinite;
+  }
+  
+  @keyframes rainbow-shift {
+    0% {
+      background-position: 0% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+  
+  .cute-border {
+    border: 4px solid;
+    border-image: linear-gradient(45deg, #ffb6c1, #ffd700, #ff69b4, #ffb6c1) 1;
+    border-radius: 20px;
+  }
+}
+
