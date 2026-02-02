@@ -11,11 +11,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <Sparkles className="h-6 w-6 text-primary-400" />
-              <span className="text-xl font-bold text-white">퀴즈랑</span>
+              <span className="text-3xl">🐶</span>
+              <span className="text-xl font-bold text-white">퀴즈독</span>
             </Link>
             <p className="text-sm text-gray-400 max-w-md">
-              한국 교육 현장에 최적화된 실시간 게이미피케이션 퀴즈 플랫폼
+              강아지와 함께하는 재미있는 퀴즈 게임! 교실을 게임으로 바꿔보세요 🐕
             </p>
           </div>
 
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
-          <p>&copy; 2024 퀴즈랑. All rights reserved.</p>
+          <p>&copy; 2024 퀴즈독. All rights reserved.</p>
         </div>
       </div>
     </footer>

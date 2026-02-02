@@ -5,18 +5,27 @@ const getApiKey = () => {
   const geminiKey = process.env.GEMINI_API_KEY
   const openaiKey = process.env.OPENAI_API_KEY
   
+  // 상세한 디버깅 정보
+  console.log('API 키 확인:', {
+    hasGemini: !!geminiKey,
+    hasOpenAI: !!openaiKey,
+    geminiKeyPrefix: geminiKey ? `${geminiKey.substring(0, 10)}...` : 'undefined',
+    allEnvKeys: Object.keys(process.env).filter(key => key.includes('API') || key.includes('GEMINI')),
+  })
+  
   if (geminiKey) {
-    console.log('GEMINI_API_KEY 로드 성공')
+    console.log('GEMINI_API_KEY 로드 성공, 길이:', geminiKey.length)
     return geminiKey
   }
   if (openaiKey) {
-    console.log('OPENAI_API_KEY 로드 성공')
+    console.log('OPENAI_API_KEY 로드 성공, 길이:', openaiKey.length)
     return openaiKey
   }
   
   console.error('AI API key not found:', {
     hasGemini: !!geminiKey,
     hasOpenAI: !!openaiKey,
+    envKeys: Object.keys(process.env).filter(key => key.includes('API')),
   })
   throw new Error('AI API key not found. Set GEMINI_API_KEY or OPENAI_API_KEY')
 }
@@ -43,7 +52,7 @@ export async function generateQuestionsWithGemini(
 ): Promise<GeneratedQuestion[]> {
   const apiKey = getApiKey()
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
   let prompt = ''
 

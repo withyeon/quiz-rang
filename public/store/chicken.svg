@@ -1,0 +1,12 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Chicken drumstick --\u003e
+  \u003cellipse cx="50" cy="45" rx="22" ry="25" fill="#d4a574" stroke="#8b6f47" stroke-width="2"/\u003e
+  \u003c!-- Bone part --\u003e
+  \u003crect x="42" y="65" width="16" height="20" rx="3" fill="#f5deb3" stroke="#d2b48c" stroke-width="1.5"/\u003e
+  \u003c!-- Bone end --\u003e
+  \u003cellipse cx="50" cy="83" rx="8" ry="5" fill="#e8d7c3"/\u003e
+  \u003c!-- Crispy texture lines --\u003e
+  \u003cpath d="M 35 40 Q 40 35, 45 40" fill="none" stroke="#8b6f47" stroke-width="1"/\u003e
+  \u003cpath d="M 55 40 Q 60 35, 65 40" fill="none" stroke="#8b6f47" stroke-width="1"/\u003e
+  \u003cpath d="M 40 50 Q 50 45, 60 50" fill="none" stroke="#8b6f47" stroke-width="1"/\u003e
+\u003c/svg\u003e

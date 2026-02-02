@@ -1,0 +1,13 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Bread package --\u003e
+  \u003crect x="20" y="25" width="60" height="50" rx="5" fill="#4a90e2" stroke="#2e5c8a" stroke-width="2"/\u003e
+  \u003c!-- Character face (simple) --\u003e
+  \u003ccircle cx="50" cy="50" r="15" fill="#ffd700" stroke="#ffa500" stroke-width="1.5"/\u003e
+  \u003c!-- Eyes --\u003e
+  \u003ccircle cx="45" cy="47" r="2" fill="#000"/\u003e
+  \u003ccircle cx="55" cy="47" r="2" fill="#000"/\u003e
+  \u003c!-- Smile --\u003e
+  \u003cpath d="M 43 52 Q 50 56, 57 52" fill="none" stroke="#000" stroke-width="1.5"/\u003e
+  \u003c!-- Package detail --\u003e
+  \u003crect x="25" y="28" width="50" height="8" rx="2" fill="#ffffff" opacity="0.3"/\u003e
+\u003c/svg\u003e

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Navbar from '@/components/Navbar'
@@ -20,13 +21,21 @@ import {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-yellow-50 to-purple-50 star-pattern relative overflow-hidden">
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        backgroundImage: 'url(/main-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {/* 반짝이는 배경 효과 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-2 h-2 bg-yellow-300 rounded-full"
+            className="absolute w-2 h-2 bg-sky-300 rounded-full"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -43,12 +52,12 @@ export default function LandingPage() {
           />
         ))}
       </div>
-      
+
       <Navbar />
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-100/50 via-yellow-100/50 to-purple-100/50" />
+        <div className="absolute inset-0 bg-sky-50/30" />
         <div className="relative max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -60,47 +69,114 @@ export default function LandingPage() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-200 via-yellow-200 to-purple-200 text-pink-800 rounded-full text-sm font-bold mb-6 shadow-lg maple-glow sparkle"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-sky-100 text-sky-700 rounded-full text-2xl font-bold mb-8 shadow-lg cloud-card font-gukguk"
             >
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Sparkles className="h-5 w-5" />
-              </motion.div>
-              ✨ 한국 교육 현장에 최적화된 플랫폼 ✨
+              <span className="text-3xl">📚</span>
+              학습 목표와 재미를 동시에 잡는 실전 게이미피케이션 솔루션
+              <span className="text-3xl">🎮</span>
             </motion.div>
-            <motion.h1 
+
+            {/* 중앙 CTA 버튼 - 로고 위에 배치 */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.25, duration: 0.5 }}
+              className="mb-8 flex justify-center"
+            >
+              <Link href="/teacher">
+                <motion.div
+                  whileHover={{
+                    scale: 1.08,
+                    rotate: [0, -2, 2, -2, 2, 0],
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{
+                    rotate: { duration: 0.5, repeat: Infinity, repeatDelay: 0.1 }
+                  }}
+                  className="relative"
+                >
+                  <motion.div
+                    animate={{
+                      boxShadow: [
+                        '0 10px 40px rgba(14, 165, 233, 0.4)',
+                        '0 10px 60px rgba(14, 165, 233, 0.6)',
+                        '0 10px 40px rgba(14, 165, 233, 0.4)',
+                      ]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute inset-0 bg-sky-400 rounded-2xl blur-xl opacity-75"
+                  />
+                  <Button
+                    size="lg"
+                    className="relative text-2xl md:text-3xl px-12 md:px-16 py-8 md:py-10 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold shadow-2xl border-4 border-white/50 rounded-2xl flex items-center gap-3 overflow-hidden"
+                    style={{ fontFamily: 'DNFBitBitv2, sans-serif' }}
+                  >
+                    {/* 반짝이 지나가는 효과 */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                      initial={{ x: '-100%' }}
+                      animate={{ x: '200%' }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 1,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                    <Image
+                      src="/header-logo.svg"
+                      alt="퀴즈독 로고"
+                      width={240}
+                      height={80}
+                      className="h-16 md:h-20 w-auto relative z-10"
+                    />
+                    <span className="relative z-10">시작하기</span>
+                    <motion.span
+                      className="relative z-10"
+                      animate={{
+                        rotate: [0, 15, -15, 15, -15, 0],
+                        scale: [1, 1.2, 1],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatDelay: 0.5,
+                      }}
+                    >
+                      ✨
+                    </motion.span>
+                    <ArrowRight className="ml-1 h-7 w-7 md:h-8 md:w-8 relative z-10" />
+                  </Button>
+                </motion.div>
+              </Link>
+            </motion.div>
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
+              className="mb-6 flex justify-center"
             >
-              <span className="rainbow-text">교실을</span>
-              <br />
-              <span className="bg-gradient-to-r from-pink-500 via-yellow-400 to-purple-500 bg-clip-text text-transparent neon-glow">
-                게임
-              </span>
-              <span className="text-gray-800">으로 바꾸세요</span>
-              <motion.span
-                animate={{ rotate: [0, 20, -20, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="inline-block ml-4 text-6xl"
-              >
-                🎮
-              </motion.span>
-            </motion.h1>
-            <motion.p 
+              <Image
+                src="/quizdog-logo.svg"
+                alt="퀴즈독 로고"
+                width={600}
+                height={200}
+                className="w-full max-w-2xl h-auto"
+                priority
+              />
+            </motion.div>
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto font-medium"
+              className="text-xl md:text-2xl text-sky-800 mb-8 max-w-3xl mx-auto font-medium fluffy-text"
             >
-              <span className="text-2xl">🎯</span> AI 기반 문제 생성부터 실시간 퀴즈 게임까지.
+              <span className="text-2xl">🐶</span> 강아지와 함께하는 재미있는 퀴즈 게임!
               <br />
-              <span className="text-2xl">🌟</span> 학생들의 참여를 극대화하는 게이미피케이션 플랫폼
+              <span className="text-2xl">🐕</span> AI 기반 문제 생성부터 실시간 게임까지, 교실을 게임으로 바꿔보세요
             </motion.p>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
@@ -111,7 +187,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button size="lg" className="text-lg px-10 py-7 maple-button text-white font-bold shadow-2xl">
+                  <Button size="lg" className="text-lg px-10 py-7 rounded-xl fluffy-button text-white font-bold shadow-2xl">
                     <span className="text-2xl mr-2">🚀</span>
                     지금 시작하기
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -123,8 +199,8 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-3 border-pink-300 bg-white/80 text-pink-600 hover:bg-pink-50 font-bold shadow-lg">
-                    <span className="text-xl mr-2">💎</span>
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-3 border-sky-300 bg-white/90 text-sky-600 hover:bg-sky-50 font-bold shadow-lg cloud-card">
+                    <span className="text-xl mr-2">🐕</span>
                     요금제 보기
                   </Button>
                 </motion.div>
@@ -132,62 +208,11 @@ export default function LandingPage() {
             </motion.div>
           </motion.div>
 
-          {/* Hero Image/Illustration */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            className="mt-16 flex justify-center"
-          >
-            <div className="relative w-full max-w-4xl">
-              <motion.div 
-                className="aspect-video bg-gradient-to-br from-pink-200 via-yellow-200 to-purple-200 rounded-3xl shadow-2xl flex items-center justify-center maple-card sparkle relative overflow-hidden"
-                animate={{ 
-                  boxShadow: [
-                    '0 0 20px rgba(255, 182, 193, 0.5)',
-                    '0 0 40px rgba(255, 215, 0, 0.6)',
-                    '0 0 20px rgba(255, 182, 193, 0.5)',
-                  ]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <span className="text-9xl">🎮</span>
-                </motion.div>
-                <motion.div
-                  className="absolute top-4 right-4 text-4xl"
-                  animate={{ 
-                    rotate: [0, 360],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  ⭐
-                </motion.div>
-                <motion.div
-                  className="absolute bottom-4 left-4 text-4xl"
-                  animate={{ 
-                    rotate: [360, 0],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{ duration: 2.5, repeat: Infinity }}
-                >
-                  ✨
-                </motion.div>
-              </motion.div>
-            </div>
-          </motion.div>
         </div>
       </section>
 
       {/* Social Proof */}
-      <section className="py-16 bg-gradient-to-br from-pink-50/50 via-yellow-50/50 to-purple-50/50 relative overflow-hidden">
+      <section className="py-16 bg-sky-50/50 relative overflow-hidden">
         <div className="absolute inset-0 star-pattern opacity-30" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
@@ -197,7 +222,7 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center"
           >
-            <motion.p 
+            <motion.p
               className="text-gray-700 mb-6 text-lg font-semibold"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -212,9 +237,10 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 }}
-                className="maple-card px-8 py-6 rounded-2xl"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="cloud-card px-8 py-6 rounded-2xl cursor-pointer transition-shadow duration-300 hover:shadow-xl"
               >
-                <div className="text-5xl font-bold rainbow-text mb-2">
+                <div className="text-5xl font-bold text-gray-900 mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                   <AnimatedNumber value={1250} suffix="+" />
                 </div>
                 <div className="text-sm text-gray-700 mt-1 font-semibold">활성 선생님</div>
@@ -224,9 +250,10 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.2 }}
-                className="maple-card px-8 py-6 rounded-2xl"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="cloud-card px-8 py-6 rounded-2xl cursor-pointer transition-shadow duration-300 hover:shadow-xl"
               >
-                <div className="text-5xl font-bold rainbow-text mb-2">
+                <div className="text-5xl font-bold text-gray-900 mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                   <AnimatedNumber value={45000} suffix="+" />
                 </div>
                 <div className="text-sm text-gray-700 mt-1 font-semibold">생성된 문제</div>
@@ -236,9 +263,10 @@ export default function LandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 }}
-                className="maple-card px-8 py-6 rounded-2xl"
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="cloud-card px-8 py-6 rounded-2xl cursor-pointer transition-shadow duration-300 hover:shadow-xl"
               >
-                <div className="text-5xl font-bold rainbow-text mb-2">
+                <div className="text-5xl font-bold text-gray-900 mb-2" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
                   <AnimatedNumber value={280000} suffix="+" />
                 </div>
                 <div className="text-sm text-gray-700 mt-1 font-semibold">참여한 학생</div>
@@ -274,12 +302,12 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              whileHover={{ y: -10 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <Card className="h-full maple-card border-4 border-pink-200">
+              <Card className="h-full cloud-card border-4 border-sky-200 transition-shadow duration-300 hover:shadow-2xl">
                 <CardHeader>
-                  <motion.div 
-                    className="h-16 w-16 bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
+                  <motion.div
+                    className="h-16 w-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
                     animate={{ rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
@@ -314,12 +342,12 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              whileHover={{ y: -10 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <Card className="h-full maple-card border-4 border-yellow-200">
+              <Card className="h-full cloud-card border-4 border-sky-300 transition-shadow duration-300 hover:shadow-2xl">
                 <CardHeader>
-                  <motion.div 
-                    className="h-16 w-16 bg-gradient-to-br from-yellow-200 to-pink-200 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
+                  <motion.div
+                    className="h-16 w-16 bg-indigo-100 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
@@ -354,12 +382,12 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              whileHover={{ y: -10 }}
+              whileHover={{ y: -10, scale: 1.02 }}
             >
-              <Card className="h-full maple-card border-4 border-purple-200">
+              <Card className="h-full cloud-card border-4 border-sky-200 transition-shadow duration-300 hover:shadow-2xl">
                 <CardHeader>
-                  <motion.div 
-                    className="h-16 w-16 bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
+                  <motion.div
+                    className="h-16 w-16 bg-green-100 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
                     animate={{ rotate: [0, -10, 10, 0] }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
@@ -393,7 +421,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-pink-400 via-yellow-400 to-purple-500 relative overflow-hidden">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 cloud-soft relative overflow-hidden">
         <div className="absolute inset-0 star-pattern opacity-20" />
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <motion.div
@@ -402,7 +430,7 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-4xl md:text-5xl font-bold text-white mb-6 neon-glow"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -422,7 +450,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 bg-white text-pink-600 hover:bg-gray-50 font-bold border-4 border-white shadow-2xl">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl bg-white text-sky-600 hover:bg-sky-50 font-bold border-4 border-white shadow-2xl">
                     <span className="text-2xl mr-2">🚀</span>
                     무료로 시작하기
                   </Button>
@@ -433,7 +461,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-4 border-white text-white hover:bg-white/20 font-bold shadow-2xl bg-white/10 backdrop-blur-sm">
+                  <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-4 border-white text-white hover:bg-white/20 font-bold shadow-2xl bg-white/10 backdrop-blur-sm">
                     <span className="text-2xl mr-2">💎</span>
                     요금제 보기
                   </Button>

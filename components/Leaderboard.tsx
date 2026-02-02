@@ -9,15 +9,36 @@ type Player = Database['public']['Tables']['players']['Row']
 interface LeaderboardProps {
   players: Player[]
   currentPlayerId?: string | null
+  sortBy?: 'score' | 'gold' // 정렬 기준 (기본값: score)
+  title?: string // 제목 커스터마이징
 }
 
-export default function Leaderboard({ players, currentPlayerId }: LeaderboardProps) {
+export default function Leaderboard({ 
+  players, 
+  currentPlayerId, 
+  sortBy = 'score',
+  title = '실시간 순위'
+}: LeaderboardProps) {
   const [sortedPlayers, setSortedPlayers] = useState<Player[]>([])
   const [previousRanks, setPreviousRanks] = useState<Map<string, number>>(new Map())
 
   useEffect(() => {
-    // 점수 순으로 정렬
-    const sorted = [...players].sort((a, b) => b.score - a.score)
+    // 정렬 기준에 따라 정렬
+    const sorted = [...players].sort((a, b) => {
+      if (sortBy === 'gold') {
+        // Gold 기준 정렬 (Gold가 같으면 score로)
+        if (b.gold !== a.gold) {
+          return b.gold - a.gold
+        }
+        return b.score - a.score
+      } else {
+        // Score 기준 정렬 (Score가 같으면 gold로)
+        if (b.score !== a.score) {
+          return b.score - a.score
+        }
+        return b.gold - a.gold
+      }
+    })
     
     // 이전 순위 저장
     const newPreviousRanks = new Map<string, number>()
@@ -30,7 +51,7 @@ export default function Leaderboard({ players, currentPlayerId }: LeaderboardPro
     setPreviousRanks(newPreviousRanks)
     
     setSortedPlayers(sorted)
-  }, [players])
+  }, [players, sortBy, sortedPlayers])
 
   const getRankChange = (playerId: string, currentIndex: number): number | null => {
     const previousRank = previousRanks.get(playerId)
@@ -38,14 +59,24 @@ export default function Leaderboard({ players, currentPlayerId }: LeaderboardPro
     return previousRank - currentIndex // 양수면 상승, 음수면 하락
   }
 
+  const isGoldMode = sortBy === 'gold'
+
   return (
-    <div className="bg-gradient-to-br from-white to-indigo-50 rounded-xl shadow-2xl p-6 border-2 border-primary-200 glow-box">
+    <div className={`rounded-xl shadow-2xl p-6 border-2 glow-box ${
+      isGoldMode 
+        ? 'bg-yellow-50 border-yellow-300' 
+        : 'bg-white border-gray-200'
+    }`}>
       <motion.h2
         animate={{ scale: [1, 1.02, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
-        className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent"
+        className={`text-3xl font-bold mb-6 ${
+          isGoldMode
+            ? 'text-yellow-700'
+            : 'text-gray-900'
+        }`}
       >
-        실시간 순위
+        {title}
       </motion.h2>
       
       {sortedPlayers.length === 0 ? (
@@ -68,7 +99,11 @@ export default function Leaderboard({ players, currentPlayerId }: LeaderboardPro
                   whileHover={{ scale: 1.02, x: 5 }}
                   className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all ${
                     isCurrentPlayer
-                      ? 'border-primary-500 bg-gradient-to-r from-primary-100 to-indigo-100 scale-105 shadow-lg glow-box'
+                      ? isGoldMode
+                        ? 'border-yellow-500 bg-yellow-100 scale-105 shadow-lg glow-box'
+                        : 'border-blue-500 bg-blue-100 scale-105 shadow-lg glow-box'
+                      : isGoldMode
+                      ? 'border-yellow-200 bg-white hover:bg-yellow-50 hover:shadow-md'
                       : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:shadow-md'
                   } ${
                     rankChange && rankChange > 0
@@ -81,7 +116,13 @@ export default function Leaderboard({ players, currentPlayerId }: LeaderboardPro
                   <div className="flex items-center gap-4">
                     <motion.div
                       animate={rankChange && rankChange > 0 ? { scale: [1, 1.3, 1] } : {}}
-                      className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-primary-500 to-indigo-600 text-white font-bold text-lg shadow-lg"
+                      className={`flex items-center justify-center w-12 h-12 rounded-full text-white font-bold text-lg shadow-lg ${
+                        isGoldMode
+                          ? index < 3
+                            ? 'bg-yellow-600'
+                            : 'bg-yellow-500'
+                          : 'bg-blue-600'
+                      }`}
                     >
                       {index + 1}
                     </motion.div>
@@ -121,8 +162,31 @@ export default function Leaderboard({ players, currentPlayerId }: LeaderboardPro
                     animate={rankChange && rankChange > 0 ? { scale: [1, 1.1, 1] } : {}}
                     className="text-right"
                   >
-                    <div className="text-2xl font-bold text-gray-800">{player.score}점</div>
-                    <div className="text-sm text-yellow-600 font-semibold">💰 {player.gold} Gold</div>
+                    {sortBy === 'gold' ? (
+                      <>
+                        <motion.div 
+                          animate={index < 3 ? { scale: [1, 1.05, 1] } : {}}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="text-3xl font-bold text-yellow-600 mb-1 flex items-center justify-end gap-2"
+                        >
+                          <motion.span 
+                            animate={{ rotate: [0, 15, -15, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                            className="text-3xl"
+                          >
+                            💰
+                          </motion.span>
+                          <span className="neon-glow">{player.gold.toLocaleString()}</span>
+                          <span className="text-xl">Gold</span>
+                        </motion.div>
+                        <div className="text-sm text-gray-600 font-semibold">{player.score}점</div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold text-gray-800">{player.score}점</div>
+                        <div className="text-sm text-yellow-600 font-semibold">💰 {player.gold.toLocaleString()} Gold</div>
+                      </>
+                    )}
                   </motion.div>
                 </motion.div>
               )

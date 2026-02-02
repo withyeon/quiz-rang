@@ -1,0 +1,13 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Chocolate bar wrapper --\u003e
+  \u003crect x="25" y="30" width="50" height="45" rx="3" fill="#8b4513" stroke="#654321" stroke-width="2"/\u003e
+  \u003c!-- Gold accent top --\u003e
+  \u003crect x="25" y="30" width="50" height="15" rx="3" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/\u003e
+  \u003c!-- Chocolate squares --\u003e
+  \u003cline x1="35" y1="50" x2="65" y2="50" stroke="#654321" stroke-width="1"/\u003e
+  \u003cline x1="35" y1="60" x2="65" y2="60" stroke="#654321" stroke-width="1"/\u003e
+  \u003cline x1="45" y1="45" x2="45" y2="75" stroke="#654321" stroke-width="1"/\u003e
+  \u003cline x1="55" y1="45" x2="55" y2="75" stroke="#654321" stroke-width="1"/\u003e
+  \u003c!-- Premium label --\u003e
+  \u003crect x="30" y="33" width="40" height="8" rx="2" fill="#ffffff" opacity="0.3"/\u003e
+\u003c/svg\u003e

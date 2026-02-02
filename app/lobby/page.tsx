@@ -1,29 +1,100 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { usePlayersRealtime } from '@/hooks/usePlayersRealtime'
+import { useRoomRealtime } from '@/hooks/useRoomRealtime'
 import QRCodeSVG from 'react-qr-code'
 import type { Database } from '@/types/database.types'
 import { filterNickname } from '@/lib/utils/profanityFilter'
+import CharacterSelector from '@/components/CharacterSelector'
+import Minigame from '@/components/Minigame'
+import { CHARACTERS, type Character } from '@/lib/utils/characters'
+import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import Link from 'next/link'
+import Navbar from '@/components/Navbar'
+
+// 게임 모드에 따른 버튼 컴포넌트
+function GameModeButton({ roomCode, playerId }: { roomCode: string; playerId: string | null }) {
+  const { room } = useRoomRealtime({ roomCode })
+  const gameMode: 'gold_quest' | 'racing' | 'battle_royale' | 'fishing' | 'factory' | 'cafe' | 'mafia' | 'pool' | 'dontlookdown' = (room?.game_mode as any) || 'gold_quest'
+
+  const gameUrl = gameMode === 'racing'
+    ? `/racing?room=${roomCode}&playerId=${playerId}`
+    : gameMode === 'battle_royale'
+      ? `/battle?room=${roomCode}&playerId=${playerId}`
+      : gameMode === 'fishing'
+        ? `/fishing?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'factory'
+          ? `/factory?room=${roomCode}&playerId=${playerId}`
+          : gameMode === 'cafe'
+            ? `/cafe?room=${roomCode}&playerId=${playerId}`
+            : gameMode === 'mafia'
+              ? `/mafia?room=${roomCode}&playerId=${playerId}`
+              : gameMode === 'pool'
+                ? `/pool?room=${roomCode}&playerId=${playerId}`
+                : gameMode === 'dontlookdown'
+                  ? `/dontlookdown?room=${roomCode}&playerId=${playerId}`
+                  : `/game?room=${roomCode}&playerId=${playerId}`
+
+  return (
+    <a
+      href={gameUrl}
+      className="block w-full sparkle-button text-white py-3 px-6 rounded-xl transition-all font-bold text-center mb-3 font-bitbit"
+    >
+      게임 시작하기 →
+    </a>
+  )
+}
+
+type LobbyStep = 'code' | 'nickname' | 'character' | 'minigame'
 
 export default function LobbyPage() {
-  const [roomCode, setRoomCode] = useState('TEST01')
+  const [step, setStep] = useState<LobbyStep>('code')
+  const [roomCode, setRoomCode] = useState('')
   const [nickname, setNickname] = useState('')
   const [playerId, setPlayerId] = useState<string | null>(null)
   const [isJoined, setIsJoined] = useState(false)
-  const [selectedAvatar, setSelectedAvatar] = useState('🎮')
+  const [selectedCharacter, setSelectedCharacter] = useState<Character>(CHARACTERS[0])
   const [isTeacher, setIsTeacher] = useState(false)
-  const [showAvatarPicker, setShowAvatarPicker] = useState(false)
-
-  const avatars = ['🎮', '👤', '🎯', '🏆', '⭐', '🔥', '💎', '🌟', '🎨', '🚀', '🎪', '🎭']
+  const [minigameScore, setMinigameScore] = useState(0)
 
   const { players, loading, error } = usePlayersRealtime({
-    roomCode,
+    roomCode: step !== 'code' ? roomCode : '',
     onPlayerUpdate: (player) => {
       console.log('Player updated:', player)
     },
   })
+
+  const { room } = useRoomRealtime({ roomCode: step !== 'code' ? roomCode : '' })
+
+  // 게임 시작 감지 - 로비나 미니게임에서 게임으로 이동
+  useEffect(() => {
+    if (room?.status === 'playing' && playerId && (step === 'character' || step === 'minigame')) {
+      // 게임 페이지로 이동
+      const gameMode = (room?.game_mode as string) || 'gold_quest'
+      const gameUrl = gameMode === 'racing'
+        ? `/racing?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'battle_royale'
+          ? `/battle?room=${roomCode}&playerId=${playerId}`
+          : gameMode === 'fishing'
+            ? `/fishing?room=${roomCode}&playerId=${playerId}`
+            : gameMode === 'factory'
+              ? `/factory?room=${roomCode}&playerId=${playerId}`
+              : gameMode === 'cafe'
+                ? `/cafe?room=${roomCode}&playerId=${playerId}`
+                : gameMode === 'mafia'
+                  ? `/mafia?room=${roomCode}&playerId=${playerId}`
+                  : gameMode === 'pool'
+                    ? `/pool?room=${roomCode}&playerId=${playerId}`
+                    : gameMode === 'dontlookdown'
+                      ? `/dontlookdown?room=${roomCode}&playerId=${playerId}`
+                      : `/game?room=${roomCode}&playerId=${playerId}`
+
+      window.location.href = gameUrl
+    }
+  }, [room?.status, step, roomCode, playerId, room?.game_mode])
 
   // 로비에서는 소리 재생하지 않음 (게임 시작 후에만 재생)
 
@@ -46,8 +117,17 @@ export default function LobbyPage() {
     }
   }
 
-  // 방 입장
-  const handleJoinRoom = async () => {
+  // 게임 코드 입력 후 다음 단계
+  const handleCodeSubmit = () => {
+    if (!roomCode.trim() || roomCode.length !== 6) {
+      alert('6자리 게임 코드를 입력해주세요.')
+      return
+    }
+    setStep('nickname')
+  }
+
+  // 닉네임 입력 후 다음 단계
+  const handleNicknameSubmit = () => {
     if (!nickname.trim()) {
       alert('닉네임을 입력해주세요.')
       return
@@ -59,6 +139,13 @@ export default function LobbyPage() {
       alert('닉네임에 부적절한 단어가 포함되어 있거나 너무 깁니다. (최대 20자)')
       return
     }
+
+    setStep('character')
+  }
+
+  // 캐릭터 선택 후 방 입장
+  const handleCharacterSelect = async (character: Character) => {
+    setSelectedCharacter(character)
 
     try {
       // 먼저 room이 존재하는지 확인 (없으면 생성)
@@ -84,14 +171,27 @@ export default function LobbyPage() {
         throw roomError
       }
 
+      // 게임 모드 확인 (Battle Royale일 경우 체력 초기화)
+      const { data: roomDataForHealth } = await (supabase
+        .from('rooms')
+        .select('game_mode')
+        .eq('room_code', roomCode)
+        .single() as any)
+
+      const isBattleRoyale = roomDataForHealth?.game_mode === 'battle_royale'
+
+      // 닉네임 필터링
+      const nicknameCheck = filterNickname(nickname)
+
       // 플레이어 생성
       const playerInsert: Database['public']['Tables']['players']['Insert'] = {
         room_code: roomCode,
         nickname: nicknameCheck.filtered || nickname.trim(),
         score: 0,
         gold: 0,
-        avatar: selectedAvatar,
+        avatar: character.emoji,
         is_online: true,
+        health: isBattleRoyale ? 100 : undefined,
       }
       const { data: playerData, error: playerError } = await (supabase
         .from('players')
@@ -103,6 +203,7 @@ export default function LobbyPage() {
 
       setPlayerId(playerData.id)
       setIsJoined(true)
+      // 캐릭터 선택 화면에 머물기 (미니게임은 선택사항)
     } catch (err) {
       console.error('Error joining room:', err)
       alert('방 입장에 실패했습니다: ' + (err instanceof Error ? err.message : 'Unknown error'))
@@ -189,245 +290,202 @@ export default function LobbyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4 text-gray-800">퀴즈랑</h1>
-          <div className="flex gap-4 justify-center">
-            <a
-              href="/teacher"
-              className="inline-block text-indigo-600 hover:text-indigo-800 underline"
-            >
-              선생님 페이지 (문제 생성) →
-            </a>
-            <span className="text-gray-400">|</span>
-            <a
-              href="/teacher/dashboard"
-              className="inline-block text-indigo-600 hover:text-indigo-800 underline"
-            >
-              선생님 대시보드 (게임 관리) →
-            </a>
-          </div>
-        </div>
+    <main className="min-h-screen sky-background relative overflow-hidden">
+      {/* 배경 패턴 */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)`
+        }}></div>
+      </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-semibold mb-4">방 설정</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                방 코드
-              </label>
-              <input
-                type="text"
-                value={roomCode}
-                onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                disabled={isJoined}
-                maxLength={6}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                닉네임
-              </label>
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                disabled={isJoined}
-                placeholder="닉네임을 입력하세요 (최대 20자)"
-                maxLength={20}
-              />
-              {nickname && !filterNickname(nickname).isValid && (
-                <p className="text-red-500 text-xs mt-1">
-                  부적절한 단어가 포함되어 있습니다.
-                </p>
-              )}
-            </div>
-            {!isJoined && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  아바타 선택
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {avatars.map((avatar) => (
-                    <button
-                      key={avatar}
-                      type="button"
-                      onClick={() => setSelectedAvatar(avatar)}
-                      className={`text-3xl p-2 rounded-lg border-2 transition-all ${
-                        selectedAvatar === avatar
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-indigo-300'
-                      }`}
-                    >
-                      {avatar}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            <div>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={isTeacher}
-                  onChange={(e) => setIsTeacher(e.target.checked)}
-                  disabled={isJoined}
-                  className="w-4 h-4"
+      <Navbar />
+
+      <div className="relative min-h-[calc(100vh-96px)] flex items-center justify-center p-8 pt-32">
+        <AnimatePresence mode="wait">
+          {/* 1단계: 게임 코드 입력 */}
+          {step === 'code' && (
+            <motion.div
+              key="code"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="text-center"
+            >
+              <div className="flex gap-2 items-center justify-center mb-8">
+                <motion.input
+                  type="text"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                  className="px-6 py-4 text-2xl font-bold text-center cloud-card border-2 border-sky-300 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400 text-gray-800 font-bitbit"
+                  placeholder="게임 코드"
+                  maxLength={6}
+                  autoFocus
+                  whileFocus={{ scale: 1.02 }}
                 />
-                <span className="text-sm text-gray-700">선생님 모드 (강퇴 기능 사용 가능)</span>
-              </label>
-            </div>
-            {!isJoined && (
-              <button
-                onClick={handleJoinRoom}
-                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium"
-              >
-                방 입장
-              </button>
-            )}
-            {isJoined && (
-              <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-green-800 font-medium">
-                    ✅ {nickname}님, 방에 입장하셨습니다!
-                  </p>
-                  <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full">
-                    <span className="text-sm font-semibold text-primary-600">
-                      {players.length}명 참가 중
-                    </span>
-                  </div>
-                </div>
-                <a
-                  href={`/game?room=${roomCode}&playerId=${playerId}`}
-                  className="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium text-center mb-3"
+                <motion.button
+                  onClick={handleCodeSubmit}
+                  className="px-6 py-4 cloud-card border-2 border-sky-300 rounded-xl shadow-lg hover:bg-sky-50 transition-colors text-2xl font-bold text-sky-700"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  게임 시작하기 →
-                </a>
-                <div className="mt-4 p-4 bg-white rounded-md">
-                  <p className="text-sm font-medium text-gray-700 mb-2">초대 링크</p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={getInviteUrl()}
-                      readOnly
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  →
+                </motion.button>
+              </div>
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="flex justify-center"
+              >
+                <Image
+                  src="/quizdog-logo.svg"
+                  alt="퀴즈독 로고"
+                  width={600}
+                  height={200}
+                  className="w-full max-w-2xl h-auto"
+                  priority
+                />
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* 2단계: 닉네임 입력 */}
+          {step === 'nickname' && (
+            <motion.div
+              key="nickname"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="text-center"
+            >
+              <motion.h1
+                className="text-5xl font-bold text-sky-800 mb-8 drop-shadow-lg font-bitbit"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                닉네임 입력
+              </motion.h1>
+              <div className="flex gap-2 items-center justify-center mb-4">
+                <motion.input
+                  type="text"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value.slice(0, 20))}
+                  className="px-6 py-4 text-xl font-medium cloud-card border-2 border-sky-300 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400 text-gray-800 font-bitbit"
+                  placeholder="닉네임 입력"
+                  maxLength={20}
+                  autoFocus
+                  whileFocus={{ scale: 1.02 }}
+                />
+                <motion.button
+                  onClick={handleNicknameSubmit}
+                  className="px-6 py-4 cloud-card border-2 border-sky-300 rounded-xl shadow-lg hover:bg-sky-50 transition-colors text-2xl font-bold text-sky-700"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  →
+                </motion.button>
+              </div>
+              {nickname && !filterNickname(nickname).isValid && (
+                <p className="text-red-500 text-sm mb-2 font-bold">부적절한 단어가 포함되어 있습니다.</p>
+              )}
+              <div className="mt-4">
+                <button className="px-4 py-2 cloud-card border-2 border-sky-200 text-sky-700 rounded-lg text-sm font-bold hover:bg-sky-50 transition-colors">
+                  새 이름 (5회 남음)
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* 3단계: 캐릭터 선택 로비 */}
+          {step === 'character' && (
+            <motion.div
+              key="character"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full max-w-6xl mx-auto"
+            >
+              <div className="cloud-card border-2 border-sky-300 text-sky-800 px-6 py-4 flex items-center justify-between mb-4 rounded-t-xl font-bitbit">
+                <span className="font-bold text-xl">{nickname}</span>
+                <span className="font-bold text-xl">로비 대기 중</span>
+                <button className="text-sky-600 hover:text-sky-800">
+                  ⚙️
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* 캐릭터 선택 그리드 */}
+                <div className="md:col-span-2 cloud-card border-2 border-sky-300 rounded-xl p-6 max-h-[600px] overflow-y-auto">
+                  <CharacterSelector
+                    selectedCharacterId={selectedCharacter.id}
+                    onSelect={handleCharacterSelect}
+                    showCategories={false}
+                  />
+                </div>
+                {/* 선택된 캐릭터 표시 */}
+                <div className="cloud-soft rounded-xl p-6 text-sky-800 border-2 border-sky-300">
+                  <h2 className="text-3xl font-bold mb-6 font-bitbit">{selectedCharacter.name}</h2>
+                  <div className="relative w-full aspect-square mb-4 max-w-[200px] mx-auto">
+                    <Image
+                      src={selectedCharacter.imagePath}
+                      alt={selectedCharacter.name}
+                      fill
+                      className="object-contain"
+                      sizes="200px"
                     />
-                    <button
-                      onClick={handleCopyUrl}
-                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium"
-                    >
-                      복사
-                    </button>
                   </div>
-                  <div className="mt-4 flex justify-center">
-                    <QRCodeSVG value={getInviteUrl()} size={128} />
+
+                  {/* 미니게임 시작 버튼 (선택사항) */}
+                  {isJoined && (
+                    <motion.button
+                      onClick={() => setStep('minigame')}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all mb-4 font-bitbit"
+                    >
+                      🎮 미니게임 시작하기
+                    </motion.button>
+                  )}
+
+                  <div className="cloud-card border-2 border-sky-300 rounded-xl p-4 flex items-center gap-2">
+                    <span className="text-2xl">🎮</span>
+                    <span className="font-bold text-sky-800 font-bitbit">호스트 대기 중</span>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-
-        {isJoined && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 className="text-2xl font-semibold mb-4">점수 테스트</h2>
-            <div className="flex gap-4">
-              <button
-                onClick={handleIncreaseScore}
-                className="flex-1 bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors font-medium"
-              >
-                +10 점수 증가
-              </button>
-              <button
-                onClick={handleDecreaseScore}
-                className="flex-1 bg-red-600 text-white py-3 px-4 rounded-md hover:bg-red-700 transition-colors font-medium"
-              >
-                -10 점수 감소
-              </button>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">
-              버튼을 클릭하면 실시간으로 점수가 반영됩니다. 다른 브라우저나 탭에서도 확인해보세요!
-            </p>
-          </div>
-        )}
-
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">플레이어 목록 (실시간)</h2>
-
-          {loading && (
-            <div className="text-center py-8 text-gray-500">로딩 중...</div>
+            </motion.div>
           )}
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
-              <p className="text-red-800">에러: {error.message}</p>
-              <p className="text-sm text-red-600 mt-2">
-                Supabase 환경 변수가 설정되어 있는지 확인해주세요.
-              </p>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <>
-              {players.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
-                  아직 플레이어가 없습니다.
+          {/* 4단계: 미니게임 */}
+          {step === 'minigame' && (
+            <motion.div
+              key="minigame"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <div className="cloud-card border-2 border-sky-300 text-sky-800 px-6 py-4 flex items-center justify-between mb-4 rounded-t-xl font-bitbit">
+                <span className="font-bold text-xl">{nickname}</span>
+                <span className="font-bold text-xl">호스트 대기 중</span>
+                <button className="text-sky-600 hover:text-sky-800">
+                  ⚙️
+                </button>
+              </div>
+              <div className="cloud-card border-2 border-sky-300 rounded-xl p-4 shadow-lg">
+                <div className="aspect-video rounded-lg overflow-hidden">
+                  <Minigame
+                    characterImage={selectedCharacter.imagePath}
+                    onScoreChange={setMinigameScore}
+                  />
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  {players.map((player, index) => (
-                    <div
-                      key={player.id}
-                      className={`flex items-center justify-between p-4 rounded-lg border-2 ${
-                        player.id === playerId
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{player.avatar || '🎮'}</span>
-                        <div>
-                          <div className="font-semibold text-gray-800">
-                            {player.nickname}
-                            {player.id === playerId && (
-                              <span className="ml-2 text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded">
-                                나
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {player.is_online ? '🟢 온라인' : '🔴 오프라인'}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-lg font-bold text-gray-800">
-                            {player.score}점
-                          </div>
-                          <div className="text-sm text-yellow-600">
-                            💰 {player.gold} Gold
-                          </div>
-                        </div>
-                        {isTeacher && player.id !== playerId && (
-                          <button
-                            onClick={() => handleKickPlayer(player.id)}
-                            className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
-                          >
-                            강퇴
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
+              </div>
+              <div className="mt-4 cloud-card border-2 border-sky-300 text-sky-800 px-6 py-4 rounded-b-xl flex items-center gap-2 font-bitbit">
+                <span className="text-2xl">🎮</span>
+                <span className="font-bold text-xl">호스트 대기 중</span>
+              </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
     </main>
   )

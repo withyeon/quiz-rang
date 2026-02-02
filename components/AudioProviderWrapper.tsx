@@ -11,10 +11,13 @@ export function AudioProviderWrapper({ children }: { children: React.ReactNode }
   // 그 외는 선생님 페이지 (기본 Unmute)
   const initialMuted = pathname?.includes('/play') ?? true
 
+  // 게임 페이지에서만 SoundToggle 표시
+  const isGamePage = pathname?.match(/^\/(play|racing|battle|fishing|factory|game)/) !== null
+
   return (
     <AudioProvider initialMuted={initialMuted}>
       {children}
-      <SoundToggle />
+      {isGamePage && <SoundToggle />}
     </AudioProvider>
   )
 }

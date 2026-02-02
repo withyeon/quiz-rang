@@ -1,6 +1,6 @@
-# K-Blooket
+# 퀴즈독 (Quiz-Dog)
 
-한국 교육 현장에 최적화된 실시간 게이미피케이션 퀴즈 플랫폼
+강아지와 함께하는 재미있는 퀴즈 게임! 교실을 게임으로 바꿔보세요 🐕
 
 ## 설치 및 실행
 
@@ -36,51 +36,28 @@ npm run dev
 
 ## Supabase 데이터베이스 설정
 
-다음 SQL을 Supabase SQL Editor에서 실행하여 테이블을 생성하세요:
+데이터베이스 설정을 위한 SQL 파일은 `sql/` 디렉토리에 있습니다.
 
-```sql
--- rooms 테이블
-CREATE TABLE rooms (
-  room_code TEXT PRIMARY KEY,
-  status TEXT NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting', 'playing', 'finished')),
-  current_q_index INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+### 빠른 시작
 
--- players 테이블 (Realtime 활성화 필수)
-CREATE TABLE players (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  room_code TEXT NOT NULL REFERENCES rooms(room_code) ON DELETE CASCADE,
-  nickname TEXT NOT NULL,
-  score INTEGER NOT NULL DEFAULT 0,
-  gold INTEGER NOT NULL DEFAULT 0,
-  avatar TEXT,
-  is_online BOOLEAN NOT NULL DEFAULT true,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+1. **Supabase 대시보드 접속**
+   - https://supabase.com → 프로젝트 선택 → SQL Editor
 
--- questions 테이블
-CREATE TABLE questions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  set_id TEXT NOT NULL,
-  type TEXT NOT NULL CHECK (type IN ('CHOICE', 'SHORT', 'OX', 'BLANK')),
-  question_text TEXT NOT NULL,
-  options JSONB NOT NULL,
-  answer TEXT NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+2. **SQL 파일 실행**
+   - `sql/setup.sql` 파일을 열어 내용을 복사
+   - Supabase SQL Editor에 붙여넣기 후 실행
 
--- Realtime 활성화
-ALTER PUBLICATION supabase_realtime ADD TABLE players;
-ALTER PUBLICATION supabase_realtime ADD TABLE rooms;
+3. **(선택) 샘플 데이터 생성**
+   - `sql/sample_data.sql` 파일 실행
 
--- 인덱스 생성
-CREATE INDEX idx_players_room_code ON players(room_code);
-CREATE INDEX idx_players_score ON players(score DESC);
-CREATE INDEX idx_questions_set_id ON questions(set_id);
-```
+### SQL 파일 설명
+
+- **`sql/setup.sql`** ⭐ (필수): 데이터베이스 초기 설정
+- **`sql/reset.sql`** ⚠️: 데이터베이스 초기화 (모든 데이터 삭제)
+- **`sql/sample_data.sql`**: 테스트용 샘플 데이터 생성
+- **`sql/README.md`**: 상세한 설정 가이드
+
+자세한 내용은 `sql/README.md` 파일을 참조하세요.
 
 ## 주요 기능
 

@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'DNFBitBitv2';
+  font-style: normal;
+  font-weight: 400;
+  src: url('//cdn.df.nexon.com/img/common/font/DNFBitBitv2.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'MomemontGukguk';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/MemomentKkukkukk.otf') format('opentype'),
+       url('/fonts/MemomentKkukkukk.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Suhgung12';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/Suhgung12.otf') format('opentype'),
+       url('/fonts/Suhgung12.ttf') format('truetype');
+  font-display: swap;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -52,13 +77,7 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      45deg,
-      transparent 30%,
-      rgba(255, 255, 255, 0.5) 50%,
-      transparent 70%
-    );
-    animation: sparkle-rotate 3s linear infinite;
+    background: transparent;
   }
   
   @keyframes sparkle-rotate {
@@ -121,39 +140,24 @@
   }
   
   .shimmer {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.6),
-      transparent
-    );
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
+    background: transparent;
   }
   
   .maple-button {
-    background: linear-gradient(135deg, #ffd700 0%, #ffb6c1 50%, #ff69b4 100%);
+    background: #3b82f6;
     border: 3px solid #fff;
     box-shadow: 
-      0 4px 15px rgba(255, 215, 0, 0.4),
+      0 4px 15px rgba(59, 130, 246, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.5),
       inset 0 -1px 0 rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
   }
   
   .maple-button:hover {
+    background: #2563eb;
     transform: translateY(-2px);
     box-shadow: 
-      0 6px 20px rgba(255, 215, 0, 0.6),
+      0 6px 20px rgba(59, 130, 246, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
   
@@ -162,10 +166,10 @@
   }
   
   .maple-card {
-    background: linear-gradient(135deg, rgba(255, 240, 245, 0.9) 0%, rgba(255, 228, 225, 0.9) 100%);
-    border: 3px solid #fff;
+    background: #ffffff;
+    border: 3px solid #e5e7eb;
     box-shadow: 
-      0 8px 25px rgba(255, 182, 193, 0.3),
+      0 8px 25px rgba(0, 0, 0, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
   }
@@ -173,8 +177,223 @@
   .maple-card:hover {
     transform: translateY(-5px) scale(1.02);
     box-shadow: 
-      0 12px 35px rgba(255, 182, 193, 0.5),
+      0 12px 35px rgba(0, 0, 0, 0.15),
       inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  /* 폭신폭신한 구름 느낌 스타일 */
+  .cloud-soft {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+    box-shadow: 
+      0 10px 30px rgba(14, 165, 233, 0.15),
+      0 5px 15px rgba(14, 165, 233, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+  }
+
+  .cloud-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(186, 230, 253, 0.5);
+    box-shadow: 
+      0 8px 32px rgba(14, 165, 233, 0.12),
+      0 4px 16px rgba(14, 165, 233, 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+  }
+
+  .cloud-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+      0 12px 40px rgba(14, 165, 233, 0.18),
+      0 6px 20px rgba(14, 165, 233, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+  }
+
+  .fluffy-button {
+    background: linear-gradient(135deg, #7dd3fc 0%, #38bdf8 100%);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 
+      0 6px 20px rgba(14, 165, 233, 0.25),
+      0 3px 10px rgba(14, 165, 233, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .fluffy-button:hover {
+    background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 8px 25px rgba(14, 165, 233, 0.3),
+      0 4px 12px rgba(14, 165, 233, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .sparkle-button {
+    background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+    border: 2px solid #00f0ff;
+    box-shadow: 
+      0 0 20px rgba(0, 240, 255, 0.6),
+      0 0 40px rgba(59, 130, 246, 0.4),
+      0 0 60px rgba(139, 92, 246, 0.3),
+      0 8px 30px rgba(0, 240, 255, 0.3),
+      inset 0 0 20px rgba(0, 240, 255, 0.2);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    font-weight: bold;
+    text-shadow: 
+      0 0 10px rgba(0, 240, 255, 0.8),
+      0 0 20px rgba(0, 240, 255, 0.6);
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
+  .sparkle-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      rgba(0, 240, 255, 0.4) 50%,
+      transparent 70%
+    );
+    animation: neon-shine 3s infinite;
+  }
+
+  .sparkle-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+    border-radius: 14px;
+    pointer-events: none;
+  }
+
+  .sparkle-button:hover {
+    background: linear-gradient(135deg, #00f0ff 0%, #06b6d4 50%, #3b82f6 100%);
+    transform: translateY(-3px) scale(1.05);
+    border-color: #00ffff;
+    box-shadow: 
+      0 0 30px rgba(0, 240, 255, 0.8),
+      0 0 50px rgba(59, 130, 246, 0.6),
+      0 0 70px rgba(139, 92, 246, 0.4),
+      0 12px 40px rgba(0, 240, 255, 0.4),
+      inset 0 0 30px rgba(0, 240, 255, 0.3);
+    text-shadow: 
+      0 0 15px rgba(0, 240, 255, 1),
+      0 0 25px rgba(0, 240, 255, 0.8),
+      0 0 35px rgba(0, 240, 255, 0.6);
+  }
+
+  .sparkle-button:active {
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 
+      0 0 25px rgba(0, 240, 255, 0.7),
+      0 0 45px rgba(59, 130, 246, 0.5),
+      0 0 65px rgba(139, 92, 246, 0.3),
+      0 6px 25px rgba(0, 240, 255, 0.3),
+      inset 0 0 25px rgba(0, 240, 255, 0.25);
+  }
+
+  @keyframes neon-pulse {
+    0%, 100% {
+      box-shadow: 
+        0 0 20px rgba(0, 240, 255, 0.6),
+        0 0 40px rgba(59, 130, 246, 0.4),
+        0 0 60px rgba(139, 92, 246, 0.3),
+        0 8px 30px rgba(0, 240, 255, 0.3),
+        inset 0 0 20px rgba(0, 240, 255, 0.2);
+      border-color: #00f0ff;
+    }
+    50% {
+      box-shadow: 
+        0 0 30px rgba(0, 240, 255, 0.8),
+        0 0 50px rgba(59, 130, 246, 0.6),
+        0 0 70px rgba(139, 92, 246, 0.4),
+        0 8px 35px rgba(0, 240, 255, 0.4),
+        inset 0 0 25px rgba(0, 240, 255, 0.3);
+      border-color: #00ffff;
+    }
+  }
+
+  @keyframes neon-shine {
+    0% {
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+      transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+  }
+
+  .sky-background {
+    background: linear-gradient(180deg, #e0f2fe 0%, #bae6fd 30%, #7dd3fc 60%, #ffffff 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sky-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.6) 0%, transparent 50%),
+      radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.5) 0%, transparent 50%),
+      radial-gradient(circle at 50% 70%, rgba(255, 255, 255, 0.4) 0%, transparent 50%);
+    background-size: 400px 400px, 500px 500px, 600px 600px;
+    background-position: 0% 0%, 100% 0%, 50% 100%;
+    animation: cloud-float 20s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes cloud-float {
+    0%, 100% {
+      transform: translateX(0) translateY(0);
+    }
+    33% {
+      transform: translateX(20px) translateY(-10px);
+    }
+    66% {
+      transform: translateX(-15px) translateY(10px);
+    }
+  }
+
+  .fluffy-text {
+    text-shadow: 
+      0 2px 4px rgba(14, 165, 233, 0.1),
+      0 1px 2px rgba(255, 255, 255, 0.8);
+  }
+
+  .font-bitbit {
+    font-family: 'DNFBitBitv2', sans-serif;
+  }
+
+  .font-bitbit,
+  .font-bitbit *,
+  .font-bitbit button,
+  .font-bitbit a,
+  .font-bitbit span {
+    font-family: 'DNFBitBitv2', sans-serif !important;
+  }
+
+  .font-gukguk {
+    font-family: 'MomemontGukguk', sans-serif;
+  }
+
+  .font-suhgung {
+    font-family: 'Suhgung12', sans-serif;
   }
   
   .star-pattern {
@@ -189,37 +408,115 @@
   }
   
   .rainbow-text {
-    background: linear-gradient(
-      90deg,
-      #ff0000 0%,
-      #ff7f00 14%,
-      #ffff00 28%,
-      #00ff00 42%,
-      #0000ff 56%,
-      #4b0082 70%,
-      #9400d3 84%,
-      #ff0000 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: rainbow-shift 3s linear infinite;
-  }
-  
-  @keyframes rainbow-shift {
-    0% {
-      background-position: 0% center;
-    }
-    100% {
-      background-position: 200% center;
-    }
+    color: #1f2937;
   }
   
   .cute-border {
-    border: 4px solid;
-    border-image: linear-gradient(45deg, #ffb6c1, #ffd700, #ff69b4, #ffb6c1) 1;
+    border: 4px solid #e5e7eb;
     border-radius: 20px;
+  }
+
+  /* 블루킷 스타일 효과 */
+  .blooket-glow {
+    box-shadow: 
+      0 0 20px rgba(255, 215, 0, 0.8),
+      0 0 40px rgba(255, 215, 0, 0.6),
+      0 0 60px rgba(255, 215, 0, 0.4),
+      0 0 80px rgba(255, 215, 0, 0.2);
+    animation: pulse-glow 2s infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 0 40px rgba(255, 215, 0, 0.6),
+        0 0 60px rgba(255, 215, 0, 0.4);
+    }
+    50% {
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 1),
+        0 0 60px rgba(255, 215, 0, 0.8),
+        0 0 90px rgba(255, 215, 0, 0.6);
+    }
+  }
+
+  .blooket-bounce {
+    animation: blooket-bounce 0.6s ease;
+  }
+
+  @keyframes blooket-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .blooket-zoom {
+    animation: blooket-zoom 0.3s ease;
+  }
+
+  @keyframes blooket-zoom {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .blooket-rotate {
+    animation: blooket-rotate 0.5s ease;
+  }
+
+  @keyframes blooket-rotate {
+    0% {
+      transform: rotate(0deg) scale(0.8);
+    }
+    50% {
+      transform: rotate(180deg) scale(1.2);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
+  }
+
+  .blooket-gradient-text {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #f9ca24, #f0932b);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .blooket-card-flip {
+    perspective: 1000px;
+  }
+
+  .blooket-card-flip-inner {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+
+  .blooket-card-flip:hover .blooket-card-flip-inner {
+    transform: rotateY(180deg);
   }
 }
 

@@ -1,19 +1,42 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+// 환경 변수 가져오기 (클라이언트/서버 모두에서 동작)
+const getSupabaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    // 클라이언트 사이드
+    return process.env.NEXT_PUBLIC_SUPABASE_URL
+  }
+  // 서버 사이드
+  return process.env.NEXT_PUBLIC_SUPABASE_URL
+}
+
+const getSupabaseAnonKey = () => {
+  if (typeof window !== 'undefined') {
+    // 클라이언트 사이드
+    return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  }
+  // 서버 사이드
+  return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+}
+
+const supabaseUrl = getSupabaseUrl()
+const supabaseAnonKey = getSupabaseAnonKey()
 
 // 환경 변수 확인 및 디버깅
 if (typeof window !== 'undefined') {
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase environment variables:', {
+    console.error('❌ Supabase 환경 변수 누락:', {
       hasUrl: !!supabaseUrl,
       hasKey: !!supabaseAnonKey,
       url: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined',
+      allEnvKeys: Object.keys(process.env).filter(key => key.includes('SUPABASE')),
     })
   } else {
-    console.log('Supabase 환경 변수 로드 성공')
+    console.log('✅ Supabase 환경 변수 로드 성공:', {
+      url: supabaseUrl.substring(0, 30) + '...',
+      keyLength: supabaseAnonKey?.length || 0,
+    })
   }
 }
 
@@ -24,6 +47,10 @@ export const supabase: SupabaseClient<Database> = supabaseUrl && supabaseAnonKey
         params: {
           eventsPerSecond: 10,
         },
+      },
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
       },
     })
   : createClient<Database>(
@@ -40,12 +67,65 @@ export const supabase: SupabaseClient<Database> = supabaseUrl && supabaseAnonKey
 
 // 환경 변수 확인 헬퍼 함수
 export function checkSupabaseConfig(): { isValid: boolean; error?: string } {
-  if (!supabaseUrl || !supabaseAnonKey) {
+  const url = getSupabaseUrl()
+  const key = getSupabaseAnonKey()
+  
+  if (!url || !key) {
     return {
       isValid: false,
       error: 'Supabase 환경 변수가 설정되지 않았습니다. NEXT_PUBLIC_SUPABASE_URL과 NEXT_PUBLIC_SUPABASE_ANON_KEY를 .env.local 파일에 설정해주세요.',
     }
   }
+  
+  // URL 형식 검증
+  if (!url.startsWith('https://') || !url.includes('.supabase.co')) {
+    return {
+      isValid: false,
+      error: 'Supabase URL 형식이 올바르지 않습니다. https://your-project.supabase.co 형식이어야 합니다.',
+    }
+  }
+  
+  // 키 형식 검증 (JWT 토큰은 보통 길고 점으로 구분됨)
+  if (key.length < 100) {
+    return {
+      isValid: false,
+      error: 'Supabase Anon Key 형식이 올바르지 않습니다.',
+    }
+  }
+  
   return { isValid: true }
 }
 
+// Supabase 연결 테스트 함수
+export async function testSupabaseConnection(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const configCheck = checkSupabaseConfig()
+    if (!configCheck.isValid) {
+      return { success: false, error: configCheck.error }
+    }
+
+    // 간단한 쿼리로 연결 테스트
+    const { data, error } = await supabase
+      .from('rooms')
+      .select('room_code')
+      .limit(1)
+
+    if (error) {
+      console.error('Supabase 연결 테스트 실패:', error)
+      return {
+        success: false,
+        error: `Supabase 연결 실패: ${error.message || '알 수 없는 오류'}`,
+      }
+    }
+
+    console.log('✅ Supabase 연결 테스트 성공')
+    return { success: true }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류'
+    console.error('Supabase 연결 테스트 중 예외 발생:', error)
+    return {
+      success: false,
+      error: `연결 테스트 실패: ${errorMessage}`,
+    }
+  }
+}

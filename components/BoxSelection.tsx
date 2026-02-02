@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import type { BoxEvent } from '@/lib/game/goldQuest'
 
 interface BoxSelectionProps {
@@ -30,23 +31,12 @@ export default function BoxSelection({
   }, [selectedBox, boxEvent])
 
   const getBoxIcon = (index: number) => {
-    if (!revealedBoxes[index]) return '📦'
-    if (selectedBox !== index) return '📦'
+    if (!revealedBoxes[index]) return null
+    if (selectedBox !== index) return null
 
     // 선택된 상자의 이벤트에 따른 아이콘
-    if (!boxEvent) return '📦'
-    switch (boxEvent.type) {
-      case 'GOLD_GAIN':
-        return '💰'
-      case 'GOLD_LOSS':
-        return '💸'
-      case 'SWAP':
-        return '🔄'
-      case 'NOTHING':
-        return '📭'
-      default:
-        return '📦'
-    }
+    if (!boxEvent) return null
+    return boxEvent.icon // BoxEvent에 이미 올바른 아이콘이 포함되어 있음
   }
 
   const getBoxColor = (index: number) => {
@@ -55,14 +45,19 @@ export default function BoxSelection({
 
     if (!boxEvent) return 'bg-yellow-100 border-yellow-300'
     switch (boxEvent.type) {
-      case 'GOLD_GAIN':
-        return 'bg-green-100 border-green-500'
-      case 'GOLD_LOSS':
-        return 'bg-red-100 border-red-500'
-      case 'SWAP':
-        return 'bg-purple-100 border-purple-500'
-      case 'NOTHING':
-        return 'bg-gray-100 border-gray-400'
+      case 'GOLD_STACK':
+      case 'JESTER':
+      case 'UNICORN':
+      case 'ELF':
+      case 'WIZARD':
+        return 'bg-green-100 border-green-500' // 골드 획득 이벤트
+      case 'SLIME_MONSTER':
+      case 'DRAGON':
+        return 'bg-red-100 border-red-500' // 골드 손실 이벤트
+      case 'KING':
+        return 'bg-purple-100 border-purple-500' // 교환 이벤트
+      case 'FAIRY':
+        return 'bg-gray-100 border-gray-400' // 아무 일도 없음
       default:
         return 'bg-yellow-100 border-yellow-300'
     }
@@ -80,13 +75,24 @@ export default function BoxSelection({
             key={index}
             onClick={() => !isSelecting && onBoxSelect(index)}
             disabled={isSelecting || revealedBoxes[index]}
-            className={`p-8 rounded-lg border-4 transition-all transform ${
-              isSelecting || revealedBoxes[index]
-                ? 'cursor-not-allowed'
-                : 'hover:scale-105 hover:shadow-lg cursor-pointer'
-            } ${getBoxColor(index)}`}
+            className={`p-8 rounded-lg border-4 transition-all transform ${isSelecting || revealedBoxes[index]
+              ? 'cursor-not-allowed'
+              : 'hover:scale-105 hover:shadow-lg cursor-pointer'
+              } ${getBoxColor(index)}`}
           >
-            <div className="text-6xl mb-2">{getBoxIcon(index)}</div>
+            <div className="text-6xl mb-2 flex items-center justify-center">
+              {getBoxIcon(index) ? (
+                <span>{getBoxIcon(index)}</span>
+              ) : (
+                <Image
+                  src="/images/gold-quest/treasure-box.svg"
+                  alt="보물상자"
+                  width={64}
+                  height={64}
+                  className="w-16 h-16"
+                />
+              )}
+            </div>
             <div className="text-sm font-medium text-gray-700">
               {revealedBoxes[index] && selectedBox === index && boxEvent
                 ? boxEvent.message
@@ -98,15 +104,18 @@ export default function BoxSelection({
 
       {boxEvent && selectedBox !== null && (
         <div
-          className={`p-4 rounded-lg text-center font-semibold ${
-            boxEvent.type === 'GOLD_GAIN'
+          className={`p-4 rounded-lg text-center font-semibold ${boxEvent.type === 'GOLD_STACK' ||
+              boxEvent.type === 'JESTER' ||
+              boxEvent.type === 'UNICORN' ||
+              boxEvent.type === 'ELF' ||
+              boxEvent.type === 'WIZARD'
               ? 'bg-green-50 text-green-800'
-              : boxEvent.type === 'GOLD_LOSS'
-              ? 'bg-red-50 text-red-800'
-              : boxEvent.type === 'SWAP'
-              ? 'bg-purple-50 text-purple-800'
-              : 'bg-gray-50 text-gray-800'
-          }`}
+              : boxEvent.type === 'SLIME_MONSTER' || boxEvent.type === 'DRAGON'
+                ? 'bg-red-50 text-red-800'
+                : boxEvent.type === 'KING'
+                  ? 'bg-purple-50 text-purple-800'
+                  : 'bg-gray-50 text-gray-800'
+            }`}
         >
           {boxEvent.message}
         </div>

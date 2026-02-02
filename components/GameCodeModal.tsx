@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Copy, Check } from 'lucide-react'
 import QRCodeSVG from 'react-qr-code'
@@ -23,7 +24,12 @@ export default function GameCodeModal({
   onStartGame,
 }: GameCodeModalProps) {
   const [copied, setCopied] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const inviteUrl = typeof window !== 'undefined' ? `${window.location.origin}/play/${roomCode}` : ''
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleCopy = async () => {
     try {
@@ -46,9 +52,9 @@ export default function GameCodeModal({
     }
   }
 
-  if (!isOpen) return null
+  if (!mounted || !isOpen) return null
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         {/* 배경 오버레이 */}
@@ -82,7 +88,7 @@ export default function GameCodeModal({
 
             {/* 방 코드 - 큰 글씨로 표시 */}
             <div className="mb-6">
-              <div className="inline-block bg-gradient-to-r from-primary-500 to-indigo-600 rounded-xl p-6 shadow-lg">
+              <div className="inline-block bg-blue-600 rounded-xl p-6 shadow-lg">
                 <motion.div
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
@@ -153,8 +159,8 @@ export default function GameCodeModal({
             {/* 안내 문구 */}
             <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
               <p className="text-sm text-primary-700">
-                📱 학생들은 <strong>퀴즈랑</strong> 앱이나 웹사이트에서<br />
-                위 코드를 입력하거나 QR 코드를 스캔하세요
+                📱 학생들은 <strong>퀴즈독</strong> 앱이나 웹사이트에서<br />
+                위 코드를 입력하거나 QR 코드를 스캔하세요 🐕
               </p>
             </div>
 
@@ -167,7 +173,7 @@ export default function GameCodeModal({
                     onClose()
                   }}
                   size="lg"
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold shadow-lg"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg"
                 >
                   🎮 게임 시작하기
                 </Button>
@@ -178,4 +184,6 @@ export default function GameCodeModal({
       </div>
     </AnimatePresence>
   )
+
+  return createPortal(modalContent, document.body)
 }

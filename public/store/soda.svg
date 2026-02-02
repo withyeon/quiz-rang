@@ -1,0 +1,12 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Can body --\u003e
+  \u003crect x="30" y="25" width="40" height="55" rx="5" fill="#e74c3c" stroke="#c0392b" stroke-width="2"/\u003e
+  \u003c!-- Top --\u003e
+  \u003cellipse cx="50" cy="25" rx="20" ry="5" fill="#c0392b"/\u003e
+  \u003c!-- Label --\u003e
+  \u003crect x="32" y="40" width="36" height="20" rx="2" fill="#ffffff" opacity="0.9"/\u003e
+  \u003c!-- Bubbles --\u003e
+  \u003ccircle cx="40" cy="50" r="2" fill="#ffffff" opacity="0.7"/\u003e
+  \u003ccircle cx="50" cy="48" r="2.5" fill="#ffffff" opacity="0.7"/\u003e
+  \u003ccircle cx="60" cy="52" r="2" fill="#ffffff" opacity="0.7"/\u003e
+\u003c/svg\u003e

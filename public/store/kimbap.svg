@@ -1,0 +1,7 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Triangle rice ball --\u003e
+  \u003cpolygon points="50,20 80,70 20,70" fill="#ffffff" stroke="#000" stroke-width="2"/\u003e
+  \u003c!-- Seaweed wrap --\u003e
+  \u003cpolygon points="35,50 50,70 20,70" fill="#1a1a1a"/\u003e
+  \u003cpolygon points="65,50 80,70 50,70" fill="#1a1a1a"/\u003e
+\u003c/svg\u003e

@@ -5,9 +5,10 @@ import { useEffect, useRef } from 'react'
 interface ParticleEffectProps {
   type: 'confetti' | 'sparkle' | 'fireworks'
   duration?: number
+  onComplete?: () => void
 }
 
-export default function ParticleEffect({ type, duration = 3000 }: ParticleEffectProps) {
+export default function ParticleEffect({ type, duration = 3000, onComplete }: ParticleEffectProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -56,6 +57,9 @@ export default function ParticleEffect({ type, duration = 3000 }: ParticleEffect
     const animate = () => {
       const elapsed = Date.now() - startTime
       if (elapsed > duration) {
+        if (onComplete) {
+          onComplete()
+        }
         return
       }
 
@@ -83,6 +87,9 @@ export default function ParticleEffect({ type, duration = 3000 }: ParticleEffect
 
       if (particles.length > 0) {
         animationFrame = requestAnimationFrame(animate)
+      } else if (onComplete) {
+        // 파티클이 모두 사라졌을 때도 onComplete 호출
+        onComplete()
       }
     }
 

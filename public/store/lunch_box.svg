@@ -1,0 +1,13 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Lunch box container --\u003e
+  \u003crect x="20" y="30" width="60" height="45" rx="3" fill="#f5deb3" stroke="#8b4513" stroke-width="2"/\u003e
+  \u003c!-- Compartments --\u003e
+  \u003cline x1="50" y1="30" x2="50" y2="75" stroke="#8b4513" stroke-width="1"/\u003e
+  \u003cline x1="20" y1="52" x2="80" y2="52" stroke="#8b4513" stroke-width="1"/\u003e
+  \u003c!-- Rice (white) --\u003e
+  \u003crect x="22" y="32" width="26" height="18" fill="#ffffff"/\u003e
+  \u003c!-- Side dishes (colors) --\u003e
+  \u003crect x="52" y="32" width="26" height="18" fill="#ff6b6b"/\u003e
+  \u003crect x="22" y="54" width="26" height="19" fill="#95e1d3"/\u003e
+  \u003crect x="52" y="54" width="26" height="19" fill="#feca57"/\u003e
+\u003c/svg\u003e

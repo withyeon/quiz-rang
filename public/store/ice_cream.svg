@@ -1,0 +1,11 @@
+\u003csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"\u003e
+  \u003c!-- Cone --\u003e
+  \u003cpolygon points="50,50 35,85 65,85" fill="#d4a574" stroke="#8b6f47" stroke-width="1.5"/\u003e
+  \u003c!-- Waffle pattern --\u003e
+  \u003cline x1="42" y1="60" x2="58" y2="60" stroke="#8b6f47" stroke-width="0.5"/\u003e
+  \u003cline x1="40" y1="70" x2="60" y2="70" stroke="#8b6f47" stroke-width="0.5"/\u003e
+  \u003c!-- Ice cream scoop --\u003e
+  \u003ccircle cx="50" cy="40" r="18" fill="#fff5e1" stroke="#f0e68c" stroke-width="1.5"/\u003e
+  \u003c!-- Swirl detail --\u003e
+  \u003cpath d="M 42 35 Q 50 30, 58 35" fill="none" stroke="#ffe4b5" stroke-width="2"/\u003e
+\u003c/svg\u003e

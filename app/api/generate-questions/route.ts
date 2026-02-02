@@ -5,6 +5,13 @@ import { extractTextFromPDF } from '@/lib/utils/pdf'
 
 export async function POST(request: NextRequest) {
   try {
+    // 환경 변수 디버깅
+    console.log('환경 변수 확인:', {
+      hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      hasOpenAIKey: !!process.env.OPENAI_API_KEY,
+      geminiKeyLength: process.env.GEMINI_API_KEY?.length || 0,
+    })
+
     const formData = await request.formData()
     const sourceType = formData.get('sourceType') as 'topic' | 'youtube' | 'text' | 'pdf'
     const questionCount = parseInt(formData.get('questionCount') as string) || 5

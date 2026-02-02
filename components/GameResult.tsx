@@ -26,6 +26,7 @@ interface GameResultProps {
   currentPlayerId: string | null
   onRestart?: () => void
   onExit?: () => void
+  gameMode?: 'gold_quest' | 'racing' | 'battle_royale' | 'fishing' | 'factory'
 }
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981']
@@ -35,8 +36,16 @@ export default function GameResult({
   currentPlayerId,
   onRestart,
   onExit,
+  gameMode = 'gold_quest',
 }: GameResultProps) {
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score)
+  // Battle Royale 모드일 경우 체력 기반 정렬, 그 외에는 점수 기반
+  const sortedPlayers = gameMode === 'battle_royale'
+    ? [...players].sort((a, b) => {
+        const healthA = (a as any).health || 0
+        const healthB = (b as any).health || 0
+        return healthB - healthA // 체력 높은 순
+      })
+    : [...players].sort((a, b) => b.score - a.score)
   const top3 = sortedPlayers.slice(0, 3)
   const currentPlayer = players.find((p) => p.id === currentPlayerId)
   const currentPlayerRank = sortedPlayers.findIndex((p) => p.id === currentPlayerId) + 1
@@ -56,7 +65,7 @@ export default function GameResult({
   }))
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-indigo-50 to-purple-50 p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 p-8 relative overflow-hidden">
       <AnimatedBackground />
       <div className="max-w-6xl mx-auto relative z-10">
         {/* 헤더 */}
@@ -68,11 +77,13 @@ export default function GameResult({
           <motion.h1
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="text-6xl font-bold bg-gradient-to-r from-primary-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2 neon-glow"
+            className="text-6xl font-bold text-gray-900 mb-2"
           >
-            게임 종료!
+            {gameMode === 'battle_royale' ? '⚔️ 배틀 종료!' : '게임 종료!'}
           </motion.h1>
-          <p className="text-xl text-gray-700 font-semibold">최종 결과를 확인하세요</p>
+          <p className="text-xl text-gray-700 font-semibold">
+            {gameMode === 'battle_royale' ? '최종 생존자를 확인하세요' : '최종 결과를 확인하세요'}
+          </p>
         </motion.div>
 
         {/* Top 3 */}
@@ -112,7 +123,7 @@ export default function GameResult({
                     <motion.div
                       animate={{ scale: [1, 1.1, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
-                      className="text-5xl font-bold bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent mb-2"
+                      className="text-5xl font-bold text-gray-900 mb-2"
                     >
                       #{rank}
                     </motion.div>
@@ -129,10 +140,23 @@ export default function GameResult({
                       transition={{ duration: 1.5, repeat: Infinity }}
                       className="space-y-2"
                     >
-                      <div className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">
-                        {player.score}점
-                      </div>
-                      <div className="text-xl text-yellow-600 font-bold">💰 {player.gold} Gold</div>
+                      {gameMode === 'battle_royale' ? (
+                        <>
+                          <div className="text-4xl font-bold text-gray-900">
+                            {(player as any).health || 0} HP
+                          </div>
+                          {rank === 1 && (
+                            <div className="text-xl text-red-600 font-bold">🏆 승리!</div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <div className="text-4xl font-bold text-gray-900">
+                            {player.score}점
+                          </div>
+                          <div className="text-xl text-yellow-600 font-bold">💰 {player.gold} Gold</div>
+                        </>
+                      )}
                     </motion.div>
                   </CardContent>
                 </Card>
@@ -179,8 +203,14 @@ export default function GameResult({
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-gray-800">{player.score}점</div>
-                        <div className="text-sm text-yellow-600">💰 {player.gold}</div>
+                        {gameMode === 'battle_royale' ? (
+                          <div className="font-bold text-gray-800">{(player as any).health || 0} HP</div>
+                        ) : (
+                          <>
+                            <div className="font-bold text-gray-800">{player.score}점</div>
+                            <div className="text-sm text-yellow-600">💰 {player.gold}</div>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   )

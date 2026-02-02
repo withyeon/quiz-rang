@@ -18,6 +18,20 @@ export interface Database {
           gold: number
           avatar: string | null
           is_online: boolean
+          position?: number
+          active_item?: Json | null
+          item_effects?: Json | null
+          health?: number
+          attack_power?: number
+          defense?: number
+          caught_fishes?: Json | null
+          fishing_points?: number
+          factories?: Json | null
+          factory_money?: number
+          cafe_cash?: number
+          cafe_customers_served?: number
+          mafia_cash?: number
+          mafia_diamonds?: number
           created_at: string
           updated_at: string
         }
@@ -29,6 +43,20 @@ export interface Database {
           gold?: number
           avatar?: string | null
           is_online?: boolean
+          position?: number
+          active_item?: Json | null
+          item_effects?: Json | null
+          health?: number
+          attack_power?: number
+          defense?: number
+          caught_fishes?: Json | null
+          fishing_points?: number
+          factories?: Json | null
+          factory_money?: number
+          cafe_cash?: number
+          cafe_customers_served?: number
+          mafia_cash?: number
+          mafia_diamonds?: number
           created_at?: string
           updated_at?: string
         }
@@ -40,6 +68,43 @@ export interface Database {
           gold?: number
           avatar?: string | null
           is_online?: boolean
+          position?: number
+          active_item?: Json | null
+          item_effects?: Json | null
+          health?: number
+          attack_power?: number
+          defense?: number
+          caught_fishes?: Json | null
+          fishing_points?: number
+          factories?: Json | null
+          factory_money?: number
+          cafe_cash?: number
+          cafe_customers_served?: number
+          mafia_cash?: number
+          mafia_diamonds?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      question_sets: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          title: string
+          description?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -49,6 +114,8 @@ export interface Database {
           room_code: string
           status: 'waiting' | 'playing' | 'finished'
           current_q_index: number
+          game_mode?: 'gold_quest' | 'racing' | 'battle_royale' | 'fishing' | 'factory' | 'cafe' | 'mafia' | 'pool' | 'tower'
+          set_id?: string | null
           created_at: string
           updated_at: string
         }
@@ -56,6 +123,8 @@ export interface Database {
           room_code: string
           status?: 'waiting' | 'playing' | 'finished'
           current_q_index?: number
+          game_mode?: 'gold_quest' | 'racing' | 'battle_royale' | 'fishing' | 'factory' | 'cafe' | 'mafia' | 'pool' | 'tower'
+          set_id?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -63,6 +132,8 @@ export interface Database {
           room_code?: string
           status?: 'waiting' | 'playing' | 'finished'
           current_q_index?: number
+          game_mode?: 'gold_quest' | 'racing' | 'battle_royale' | 'fishing' | 'factory' | 'cafe' | 'mafia' | 'pool' | 'tower'
+          set_id?: string | null
           created_at?: string
           updated_at?: string
         }

@@ -1,17 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { usePlayersRealtime } from '@/hooks/usePlayersRealtime'
+import { useRoomRealtime } from '@/hooks/useRoomRealtime'
 import QRCodeSVG from 'react-qr-code'
 import type { Database } from '@/types/database.types'
 import { filterNickname } from '@/lib/utils/profanityFilter'
 
+// 게임 모드에 따른 버튼 컴포넌트
+function GameModeButton({ roomCode, playerId }: { roomCode: string; playerId: string | null }) {
+  const { room } = useRoomRealtime({ roomCode })
+  const gameMode = room?.game_mode || 'gold_quest'
+  
+  const gameUrl = gameMode === 'racing' 
+    ? `/racing?room=${roomCode}&playerId=${playerId}`
+    : gameMode === 'battle_royale'
+    ? `/battle?room=${roomCode}&playerId=${playerId}`
+    : gameMode === 'fishing'
+    ? `/fishing?room=${roomCode}&playerId=${playerId}`
+    : gameMode === 'factory'
+    ? `/factory?room=${roomCode}&playerId=${playerId}`
+    : `/game?room=${roomCode}&playerId=${playerId}`
+  
+  return (
+    <a
+      href={gameUrl}
+      className="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium text-center"
+    >
+      게임 시작하기 →
+    </a>
+  )
+}
+
 export default function PlayPage() {
   const params = useParams()
   const router = useRouter()
-  const roomCode = (params.room_code as string)?.toUpperCase() || ''
+  const roomCode = (params.room_code as string)?.replace(/[^0-9]/g, '') || ''
   
   const [nickname, setNickname] = useState('')
   const [playerId, setPlayerId] = useState<string | null>(null)
@@ -27,6 +53,33 @@ export default function PlayPage() {
       console.log('Player updated:', player)
     },
   })
+
+  const { room } = useRoomRealtime({ roomCode })
+
+  // 게임 시작 감지 - 입장 후 로비에서 게임으로 이동
+  useEffect(() => {
+    if (room?.status === 'playing' && isJoined && playerId) {
+      // 게임 페이지로 이동
+      const gameMode = room?.game_mode || 'gold_quest'
+      const gameUrl = gameMode === 'racing' 
+        ? `/racing?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'battle_royale'
+        ? `/battle?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'fishing'
+        ? `/fishing?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'factory'
+        ? `/factory?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'cafe'
+        ? `/cafe?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'mafia'
+        ? `/mafia?room=${roomCode}&playerId=${playerId}`
+        : gameMode === 'pool'
+        ? `/pool?room=${roomCode}&playerId=${playerId}`
+        : `/game?room=${roomCode}&playerId=${playerId}`
+      
+      window.location.href = gameUrl
+    }
+  }, [room?.status, isJoined, playerId, roomCode, room?.game_mode])
 
   // 로비에서는 소리 재생하지 않음 (게임 시작 후에만 재생)
 
@@ -65,11 +118,12 @@ export default function PlayPage() {
 
     try {
       // 먼저 room이 존재하는지 확인 (없으면 생성)
-      const { data: roomData, error: roomError } = await supabase
+      let roomData: any = null
+      const { data: existingRoomData, error: roomError } = await (supabase
         .from('rooms')
         .select('*')
         .eq('room_code', roomCode)
-        .single()
+        .single() as any)
 
       if (roomError && roomError.code === 'PGRST116') {
         // 방이 없으면 생성
@@ -82,9 +136,23 @@ export default function PlayPage() {
           } as any) as any)
 
         if (createError) throw createError
+        
+        // 방 생성 후 다시 조회
+        const { data: newRoomData } = await (supabase
+          .from('rooms')
+          .select('*')
+          .eq('room_code', roomCode)
+          .single() as any)
+        
+        roomData = newRoomData
       } else if (roomError) {
         throw roomError
+      } else {
+        roomData = existingRoomData
       }
+
+      // 게임 모드 확인 (Battle Royale일 경우 체력 초기화)
+      const isBattleRoyale = roomData?.game_mode === 'battle_royale'
 
       // 플레이어 생성 (Guest Mode - 영구 계정 없음)
       const { data: playerData, error: playerError } = await (supabase
@@ -96,6 +164,7 @@ export default function PlayPage() {
           gold: 0,
           avatar: selectedAvatar,
           is_online: true,
+          health: isBattleRoyale ? 100 : undefined,
         } as any)
         .select()
         .single() as any)
@@ -112,7 +181,7 @@ export default function PlayPage() {
 
   if (!roomCode) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <p className="text-gray-800">유효하지 않은 방 코드입니다.</p>
         </div>
@@ -121,10 +190,13 @@ export default function PlayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+    <main className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4 text-gray-800">퀴즈랑</h1>
+          <h1 className="text-4xl font-bold mb-4 text-gray-800 flex items-center justify-center gap-2">
+            <span className="text-5xl">🐶</span>
+            퀴즈독
+          </h1>
           <p className="text-lg text-gray-600 mb-2">
             방 코드: <span className="font-bold">{roomCode}</span>
           </p>
@@ -233,12 +305,7 @@ export default function PlayPage() {
               <p className="text-green-800 font-medium mb-3">
                 ✅ {nickname}님, 방에 입장하셨습니다!
               </p>
-              <a
-                href={`/game?room=${roomCode}&playerId=${playerId}`}
-                className="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors font-medium text-center"
-              >
-                게임 시작하기 →
-              </a>
+              <GameModeButton roomCode={roomCode} playerId={playerId} />
             </div>
           </>
         )}
